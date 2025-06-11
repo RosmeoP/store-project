@@ -28,32 +28,41 @@
 import { ref } from 'vue'
 import axios from 'axios'
 
+const AUTH_API = import.meta.env.VITE_AUTH_API_URL || '/api/auth'
+const PRODUCTS_API = import.meta.env.VITE_PRODUCTS_API_URL || '/api/items'
+
 const props = defineProps({
   items: Array
 })
 const emit = defineEmits(['refresh', 'edit', 'delete'])
 
 const newProduct = ref({ nombre: '', descripcion: '', precio: null })
+const BACKEND_URL = 'http://localhost:4000/api/items';
 
 const addProduct = async () => {
   try {
     if (!newProduct.value.nombre || !newProduct.value.descripcion || newProduct.value.precio === null || newProduct.value.precio === '') {
-      alert('Todos los campos son obligatorios');
+      window.alert('Por favor, completa todos los campos para agregar un producto.');
       return;
     }
     if (isNaN(newProduct.value.precio) || Number(newProduct.value.precio) < 0) {
-      alert('El precio debe ser un número positivo');
+      window.alert('El precio debe ser un número positivo.');
       return;
     }
-    await axios.post('http://localhost:4000/api/items', {
+    await axios.post(BACKEND_URL, {
       nombre: newProduct.value.nombre,
       descripcion: newProduct.value.descripcion,
       precio: Number(newProduct.value.precio)
     });
     newProduct.value = { nombre: '', descripcion: '', precio: null };
+    window.alert('¡Producto agregado exitosamente!');
     emit('refresh');
   } catch (err) {
-    alert('Error al agregar producto: ' + (err.response?.data?.error || err.message));
+    if (err.response && err.response.status === 404) {
+      window.alert('No se pudo encontrar el endpoint para agregar productos. Verifica que el backend esté corriendo y la ruta /api/items exista.');
+    } else {
+      window.alert('Error al agregar producto: ' + (err.response?.data?.error || err.message));
+    }
   }
 }
 </script>

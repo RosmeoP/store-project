@@ -7,156 +7,87 @@ require('dotenv').config();
 
 // Registro
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
-
+  const { email, password } = req.body;
   try {
-    // Verificar si el usuario ya existe
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ msg: 'El usuario ya existe' });
-    }
+    const exists = await User.findOne({ email });
+    if (exists) return res.status(400).json({ message: 'Usuario ya existe' });
 
-    user = new User({ username, email, password });
-
-    // Hashear la contraseña
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-
+    const hashed = await bcrypt.hash(password, 10);
+    const user = new User({ email, password: hashed });
     await user.save();
-
-    // Crear y firmar el token
-    const payload = { user: { id: user.id } };
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '5d' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
+    res.json({ message: 'Usuario registrado' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error en el servidor');
+    res.status(500).json({ message: 'Error en el servidor' });
   }
 });
 
 // Login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
   try {
-    // Verificar si el usuario existe
-    let user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ msg: 'Credenciales inválidas' });
-    }
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: 'Credenciales inválidas' });
 
-    // Verificar la contraseña
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ msg: 'Credenciales inválidas' });
-    }
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(400).json({ message: 'Credenciales inválidas' });
 
-    // Crear y firmar el token
-    const payload = { user: { id: user.id } };
-    jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: '5d' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
+    const token = jwt.sign({ id: user._id }, 'miclaveultrasecreta', { expiresIn: '1h' });
+    res.json({ token });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error en el servidor');
+    res.status(500).json({ message: 'Error en el servidor' });
   }
 });
 
 // obtener usuarios
 router.get('/users', async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find({}, '-password');
     res.json(users);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error en el servidor');
+    res.status(500).json({ message: 'Error al obtener usuarios' });
   }
 });
 
 // agregar usuario
 router.post('/users', async (req, res) => {
-  const { username, email, password } = req.body;
-
+  const { email, password } = req.body;
   try {
-    // Verificar si el usuario ya existe
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ msg: 'El usuario ya existe' });
-    }
-
-    user = new User({ username, email, password });
-
-    // Hashear la contraseña
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-
+    const exists = await User.findOne({ email });
+    if (exists) return res.status(400).json({ message: 'Usuario ya existe' });
+    const hashed = await bcrypt.hash(password, 10);
+    const user = new User({ email, password: hashed });
     await user.save();
-    res.status(201).json({ msg: 'Usuario creado exitosamente' });
+    res.json({ message: 'Usuario creado' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error en el servidor');
+    res.status(500).json({ message: 'Error al crear usuario' });
   }
 });
 
 // editar usuario
 router.put('/users/:id', async (req, res) => {
-  const { username, email, password } = req.body;
-  const userId = req.params.id;
-
+  const { id } = req.params;
+  const { email, password } = req.body;
   try {
-    // Verificar si el usuario existe
-    let user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
-    }
-
-    // Actualizar campos
-    user.username = username || user.username;
-    user.email = email || user.email;
-
-    if (password) {
-      // Hashear la nueva contraseña
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
-    }
-
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+    if (email) user.email = email;
+    if (password) user.password = await bcrypt.hash(password, 10);
     await user.save();
-    res.json({ msg: 'Usuario actualizado exitosamente' });
+    res.json({ message: 'Usuario actualizado' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error en el servidor');
+    res.status(500).json({ message: 'Error al actualizar usuario' });
   }
 });
 
 // eliminar usuario
 router.delete('/users/:id', async (req, res) => {
-  const userId = req.params.id;
-
+  const { id } = req.params;
   try {
-    // Verificar si el usuario existe
-    let user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
-    }
-
-    await User.findByIdAndDelete(userId);
-    res.json({ msg: 'Usuario eliminado exitosamente' });
+    const user = await User.findByIdAndDelete(id);
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+    res.json({ message: 'Usuario eliminado' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Error en el servidor');
+    res.status(500).json({ message: 'Error al eliminar usuario' });
   }
 });
 

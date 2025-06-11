@@ -1,9 +1,11 @@
 {
-  "name": "backend",
+  "name": "backend-auth",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
+    "dev:auth": "PORT=4000 node server.js",
+    "dev:items": "PORT=3000 node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
