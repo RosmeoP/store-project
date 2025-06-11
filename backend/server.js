@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config({ path: process.env.ENV_PATH || '.env' });
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
@@ -14,5 +14,5 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/items', require('./routes/items'));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));

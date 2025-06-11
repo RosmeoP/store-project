@@ -37,7 +37,6 @@ const props = defineProps({
 const emit = defineEmits(['refresh', 'edit', 'delete'])
 
 const newProduct = ref({ nombre: '', descripcion: '', precio: null })
-const BACKEND_URL = 'http://localhost:4000/api/items';
 
 const addProduct = async () => {
   try {
@@ -49,7 +48,7 @@ const addProduct = async () => {
       window.alert('El precio debe ser un número positivo.');
       return;
     }
-    await axios.post(BACKEND_URL, {
+    await axios.post(PRODUCTS_API, {
       nombre: newProduct.value.nombre,
       descripcion: newProduct.value.descripcion,
       precio: Number(newProduct.value.precio)
