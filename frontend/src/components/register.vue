@@ -1,24 +1,24 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-100 to-blue-100">
-    <form @submit.prevent="register" class="bg-white/90 shadow-xl rounded-2xl px-8 py-10 w-full max-w-md flex flex-col gap-5">
+  <div class="min-h-screen flex items-center justify-center bg-indigo-50">
+    <form @submit.prevent="register" class="bg-white shadow-lg rounded-xl px-8 py-10 w-full max-w-md flex flex-col gap-5">
       <h2 class="text-2xl font-bold text-center text-indigo-700 mb-2">Crear Cuenta</h2>
       <input
         v-model="email"
         type="email"
         placeholder="Correo electrónico"
         required
-        class="px-4 py-3 rounded-lg border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition text-gray-700 bg-indigo-50 placeholder-indigo-300"
+        class="px-4 py-3 rounded-lg border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition text-gray-700 bg-white placeholder-indigo-300"
       />
       <input
         v-model="password"
         type="password"
         placeholder="Contraseña"
         required
-        class="px-4 py-3 rounded-lg border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition text-gray-700 bg-indigo-50 placeholder-indigo-300"
+        class="px-4 py-3 rounded-lg border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition text-gray-700 bg-white placeholder-indigo-300"
       />
       <button
         type="submit"
-        class="bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:from-indigo-600 hover:to-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        class="bg-indigo-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-indigo-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
       >
         Registrarse
       </button>
@@ -61,3 +61,5 @@ const register = async () => {
   }
 }
 </script>
+
+<!-- Tailwind CSS is used for all styling. Only two colors: indigo and white. -->

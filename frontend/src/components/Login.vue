@@ -1,19 +1,28 @@
 <template>
-  <div class="flex justify-center items-center min-h-screen bg-gray-100">
-    <form @submit.prevent="login" class="bg-white p-8 rounded-xl shadow-lg w-full max-w-xs flex flex-col gap-4">
-      <h2 class="text-2xl font-semibold text-center text-blue-700 mb-2">Iniciar Sesión</h2>
-      <input v-model="email" type="email" placeholder="Correo electrónico" required
-        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-      <input v-model="password" type="password" placeholder="Contraseña" required
-        class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-      <button type="submit"
-        class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 font-medium transition">Ingresar</button>
-      <p v-if="error" class="text-red-500 text-center text-sm">{{ error }}</p>
-      <p class="text-center text-sm mt-2">
-        ¿No tienes cuenta?
-        <router-link to="/register" class="text-blue-600 hover:text-blue-800 underline">Regístrate aquí</router-link>
-      </p>
-    </form>
+  <div class="flex min-h-screen bg-indigo-50">
+    <!-- Side Panel -->
+    <div class="hidden md:flex flex-col justify-center items-center w-1/2 bg-indigo-700 text-white p-12 rounded-r-3xl shadow-2xl">
+      <h1 class="text-4xl font-extrabold mb-4 tracking-tight">Bienvenido de nuevo</h1>
+      <p class="text-lg mb-8 max-w-xs text-indigo-100">Accede a tu cuenta para gestionar tus productos y descubrir nuevas oportunidades.</p>
+      <img src="/vite.svg" alt="Logo" class="w-32 h-32 opacity-90" />
+    </div>
+    <!-- Login Form -->
+    <div class="flex flex-1 justify-center items-center">
+      <form @submit.prevent="login" class="bg-white p-12 rounded-3xl shadow-2xl w-full max-w-md flex flex-col gap-6">
+        <h2 class="text-3xl font-bold text-center text-indigo-700 mb-2">Iniciar Sesión</h2>
+        <input v-model="email" type="email" placeholder="Correo electrónico" required
+          class="border border-indigo-200 rounded-lg px-5 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-700 bg-white placeholder-indigo-300 text-lg" />
+        <input v-model="password" type="password" placeholder="Contraseña" required
+          class="border border-indigo-200 rounded-lg px-5 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-700 bg-white placeholder-indigo-300 text-lg" />
+        <button type="submit"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg py-3 font-semibold text-lg shadow transition">Ingresar</button>
+        <p v-if="error" class="text-red-500 text-center text-base">{{ error }}</p>
+        <p class="text-center text-base mt-2 text-gray-600">
+          ¿No tienes cuenta?
+          <router-link to="/register" class="text-indigo-600 hover:underline font-medium">Regístrate aquí</router-link>
+        </p>
+      </form>
+    </div>
   </div>
 </template>
 
