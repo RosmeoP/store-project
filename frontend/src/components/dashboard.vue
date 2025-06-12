@@ -8,6 +8,8 @@
       :sections="sections"
       @change-section="changeSection"
       @logout="logout"
+      @edit-user="editUser"
+      @delete-user="deleteUser"
     />
     <!-- Overlay for mobile -->
     <div class="fixed inset-0 bg-black bg-opacity-30 z-10 md:hidden" v-if="sidebarOpen" @click="sidebarOpen = false"></div>
@@ -62,6 +64,11 @@
           <p class="text-sm text-indigo-500">Desarrollado con Vue 3, Tailwind CSS y Lucide Icons.</p>
         </div>
       </div>
+      <div v-else-if="activeSection === 'account'">
+        <Account @edit-user="editUser" @delete-user="deleteUser" />
+        <EditUserForm v-if="showEditUser" :user="currentUser" @close="showEditUser = false" @refresh="fetchUsers" />
+        <DeleteUserForm v-if="showDeleteUser" :user="currentUser" @close="showDeleteUser = false" @refresh="fetchUsers" />
+      </div>
     </div>
   </div>
 </template>
@@ -72,6 +79,7 @@ import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
 import ProductList from './ProductList.vue'
 import SideBar from './SideBar.vue'
+import Account from './Account.vue'
 
 const users = ref([])
 const showCreate = ref(false)
@@ -83,6 +91,9 @@ const editProduct = ref({ nombre: '', descripcion: '', precio: null })
 const editProductId = ref(null)
 const sidebarOpen = ref(false)
 const activeSection = ref('products')
+
+const showEditUser = ref(false)
+const showDeleteUser = ref(false)
 
 const sections = [
   { key: 'products', label: 'Productos', icon: { render() { return h('svg', { xmlns: 'http://www.w3.org/2000/svg', class: 'w-5 h-5', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('rect', { x: 3, y: 7, width: 18, height: 13, rx: 2, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }), h('path', { d: 'M16 3v4M8 3v4' })]) } } },
@@ -134,12 +145,12 @@ const cancelEdit = () => {
   editProduct.value = { nombre: '', descripcion: '', precio: null }
 }
 
-const editUser = (user) => {
-  selectedUser.value = { ...user }
+const editUser = () => {
+  showEditUser.value = true
 }
 
-const deleteUser = (user) => {
-  userToDelete.value = user
+const deleteUser = () => {
+  showDeleteUser.value = true
 }
 
 const logout = () => {

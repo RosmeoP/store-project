@@ -30,6 +30,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import axios from 'axios'
 
 const email = ref('')
 const password = ref('')
@@ -41,10 +42,15 @@ const auth = useAuthStore()
 const login = async () => {
   error.value = ''
   try {
-    const success = await auth.login(email.value, password.value)
-    if (success) {
-      router.push('/dashboard')
-    }
+    const res = await axios.post('http://localhost:4000/api/auth/login', {
+      email: email.value,
+      password: password.value
+    })
+    // Guardar usuario y token en el store
+    auth.token = res.data.token
+    auth.user = res.data.user
+    localStorage.setItem('token', res.data.token)
+    router.push('/dashboard')
   } catch (err) {
     error.value = err.response?.data?.message || err.message || 'Error desconocido'
   }

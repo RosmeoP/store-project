@@ -50,6 +50,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../stores/auth'
 
 const email = ref('')
 const password = ref('')
@@ -57,6 +58,7 @@ const error = ref('')
 const success = ref('')
 
 const router = useRouter()
+const auth = useAuthStore()
 
 const register = async () => {
   error.value = ''
@@ -66,7 +68,11 @@ const register = async () => {
       email: email.value,
       password: password.value
     })
-    success.value = res.data.message
+    // Guardar usuario y token en el store
+    auth.token = res.data.token
+    auth.user = res.data.user
+    localStorage.setItem('token', res.data.token)
+    success.value = 'Registro exitoso'
     email.value = ''
     password.value = ''
     router.push('/dashboard') // Redirect after successful registration
