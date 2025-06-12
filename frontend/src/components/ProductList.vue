@@ -1,37 +1,21 @@
 <template>
-<div>
-    <!-- Form to Add Product -->
-    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <form @submit.prevent="addProduct" class="flex flex-col md:flex-row gap-2 items-center w-full">
-        <input v-model="newProduct.nombre" placeholder="Nombre" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
-        <input v-model="newProduct.descripcion" placeholder="Descripción" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
-        <input v-model.number="newProduct.precio" placeholder="Precio" type="number" step="0.01" min="0" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
-        
-        <!-- Drag and Drop Image Upload -->
-        <div
-          class="border-2 border-dashed border-indigo-300 rounded-md px-4 py-6 text-center cursor-pointer bg-indigo-50 hover:bg-indigo-100 transition w-full md:w-48"
-          @dragover.prevent
-          @drop.prevent="handleDrop"
-          @click="triggerFileSelect"
-        >
-          <p class="text-sm text-indigo-700">Arrastra una imagen aquí o haz clic para subir</p>
-          <input ref="fileInput" type="file" accept="image/*" @change="onFileChange" class="hidden" />
-          <img v-if="newProduct.img" :src="newProduct.img" class="mt-3 w-20 h-20 object-cover mx-auto rounded shadow border border-indigo-200" />
-        </div>
-
-        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded transition">Agregar Producto</button>
-      </form>
+  <div>
+    <!-- Botón arriba a la derecha -->
+    <div class="flex justify-end w-full max-w-5xl mx-auto mt-8 mb-6">
+      <button
+        class="bg-gradient-to-r from-indigo-500 via-indigo-400 to-indigo-600 hover:from-indigo-600 hover:to-indigo-500 text-white font-extrabold px-6 py-3 rounded-2xl shadow-2xl text-lg transition-all duration-200 border-2 border-indigo-200"
+        @click="showAddModal = true"
+      >
+        + Agregar Producto
+      </button>
     </div>
 
-    <!-- Product Cards -->   
-   
-
     <!-- Product Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl mx-auto justify-items-center">
       <div
         v-for="item in items"
         :key="item._id"
-        class="bg-gradient-to-br from-indigo-50 via-white to-indigo-100 rounded-2xl shadow-xl p-6 flex flex-col justify-between min-h-[320px] border border-indigo-200 hover:shadow-2xl transition group relative overflow-hidden"
+        class="bg-gradient-to-br from-indigo-50 via-white to-indigo-100 rounded-2xl shadow-xl p-6 flex flex-col justify-between min-h-[380px] w-[350px] border border-indigo-200 hover:shadow-2xl transition group relative overflow-hidden"
       >
         <button
           class="absolute top-3 right-3 z-20 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow hover:bg-pink-100 transition"
@@ -55,14 +39,14 @@
             v-if="item.img"
             :src="item.img"
             alt="Imagen del producto"
-            class="w-full h-64 object-cover rounded-xl border border-indigo-100 shadow"
+            class="w-full h-56 object-cover rounded-xl border border-indigo-100 shadow bg-white"
             @error="e => e.target.src = 'https://placehold.co/600x300?text=Producto'"
           />
           <img
             v-else
             src="https://placehold.co/600x300?text=Producto"
             alt="Imagen por defecto"
-            class="w-full h-64 object-cover rounded-xl border border-indigo-100 shadow"
+            class="w-full h-56 object-cover rounded-xl border border-indigo-100 shadow bg-white"
           />
           <div class="text-center w-full">
             <div class="font-extrabold text-xl text-indigo-900 group-hover:text-indigo-700 transition">{{ item.nombre }}</div>
@@ -106,6 +90,47 @@
         </div>
       </form>
     </div>
+
+    <!-- Add Product Modal -->
+    <div v-if="showAddModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <form
+        @submit.prevent="addProduct"
+        class="bg-white rounded-2xl shadow-2xl p-8 flex flex-col gap-5 w-full max-w-md relative"
+        @dragover.prevent="dragActive = true"
+        @dragleave.prevent="dragActive = false"
+        @drop.prevent="handleDrop"
+      >
+        <button type="button" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl" @click="cancelAdd">&times;</button>
+        <h2 class="text-2xl font-bold text-indigo-700 mb-2">Agregar Producto</h2>
+        <input v-model="newProduct.nombre" placeholder="Nombre" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+        <input v-model="newProduct.descripcion" placeholder="Descripción" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+        <input v-model.number="newProduct.precio" placeholder="Precio" type="number" min="0" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+
+        <!-- Drag & Drop Area -->
+        <div
+          class="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 transition cursor-pointer w-full"
+          :class="dragActive ? 'border-indigo-400 bg-indigo-50' : 'border-indigo-200 bg-white'"
+          @click="triggerFileSelect"
+        >
+          <input
+            type="file"
+            ref="fileInput"
+            accept="image/*"
+            class="hidden"
+            @change="onFileChange"
+          />
+          <div v-if="newProduct.img" class="mb-2">
+            <img :src="newProduct.img" alt="Preview" class="w-32 h-32 object-cover rounded-lg border" />
+          </div>
+          <div class="text-center text-indigo-500">
+            <span v-if="!newProduct.img">Arrastra una imagen aquí o haz clic para subir</span>
+            <span v-else>Cambiar imagen</span>
+          </div>
+        </div>
+
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-semibold transition">Agregar</button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -127,7 +152,7 @@ const cart = ref([])
 const editProduct = ref({ nombre: '', descripcion: '', precio: null })
 const editProductId = ref(null)
 const showAddModal = ref(false)
-const dragActive = ref(false);
+const dragActive = ref(false)
 
 function startEdit(item) {
   editProductId.value = item._id
@@ -210,15 +235,9 @@ const addProduct = async () => {
   }
 };
 
-const cancelAdd = () => {
-  newProduct.value = { nombre: '', descripcion: '', precio: null, img: '', file: null }
-  showAddModal.value = false
-}
-
 function triggerFileSelect() {
-  fileInput.value.click()
+  fileInput.value && fileInput.value.click()
 }
-
 function onFileChange(e) {
   const file = e.target.files[0]
   if (file) {
@@ -230,8 +249,8 @@ function onFileChange(e) {
     reader.readAsDataURL(file)
   }
 }
-
 function handleDrop(e) {
+  dragActive.value = false
   const file = e.dataTransfer.files[0]
   if (file) {
     newProduct.value.file = file
@@ -241,5 +260,10 @@ function handleDrop(e) {
     }
     reader.readAsDataURL(file)
   }
+}
+function cancelAdd() {
+  showAddModal.value = false
+  newProduct.value = { nombre: '', descripcion: '', precio: null, img: '', file: null }
+  if (fileInput.value) fileInput.value.value = ''
 }
 </script>
