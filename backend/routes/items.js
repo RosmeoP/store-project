@@ -66,5 +66,36 @@ router.post('/', upload.single('img'), async (req, res) => {
     });
   }
 });
- 
+
+// Actualizar un item existente
+router.put('/:id', async (req, res) => {
+  try {
+    const { nombre, descripcion, precio } = req.body;
+    const parsedPrecio = parseFloat(precio);
+
+    if (!nombre || !descripcion || isNaN(parsedPrecio)) {
+      return res.status(400).json({ error: 'Datos inválidos para actualizar' });
+    }
+
+    const updatedItem = await Item.findByIdAndUpdate(
+      req.params.id,
+      { nombre, descripcion, precio: parsedPrecio },
+      { new: true }
+    );
+
+    if (!updatedItem) {
+      return res.status(404).json({ error: 'Item no encontrado' });
+    }
+
+    res.json(updatedItem);
+  } catch (error) {
+    console.error('💥 Error en /api/items PUT:', error);
+    res.status(500).json({
+      error: 'Error al actualizar el item',
+      message: error.message,
+      stack: error.stack
+    });
+  }
+});
+
 module.exports = router;

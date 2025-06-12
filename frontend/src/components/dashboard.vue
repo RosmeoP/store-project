@@ -29,16 +29,16 @@
           @delete="deleteProduct"
         />
         <div v-if="editProductId" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <form @submit.prevent="updateProduct" class="bg-white rounded-xl shadow-xl p-8 flex flex-col gap-4 min-w-[320px]">
-            <h2 class="text-xl font-semibold text-indigo-700 mb-2">Editar Producto</h2>
-            <input v-model="editProduct.nombre" placeholder="Nombre" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
-            <input v-model="editProduct.descripcion" placeholder="Descripción" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
-            <input v-model.number="editProduct.precio" placeholder="Precio" type="number" min="0" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
-            <div class="flex gap-2 mt-2">
-              <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-medium transition">Guardar</button>
-              <button type="button" class="bg-gray-400 hover:bg-gray-600 text-white px-4 py-2 rounded font-medium transition" @click="cancelEdit">Cancelar</button>
-            </div>
-          </form>
+         <form @submit.prevent="updateProduct" class="bg-white rounded-xl shadow-xl p-8 flex flex-col gap-4 min-w-[320px]">
+        <h2 class="text-xl font-semibold text-indigo-700 mb-2">Editar Producto</h2>
+        <input v-model="editProduct.nombre" placeholder="Nombre" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+        <input v-model="editProduct.descripcion" placeholder="Descripción" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+        <input v-model.number="editProduct.precio" placeholder="Precio" type="number" min="0" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+        <div class="flex gap-2 mt-2">
+          <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-medium transition">Guardar</button>
+          <button type="button" class="bg-gray-400 hover:bg-gray-600 text-white px-4 py-2 rounded font-medium transition" @click="cancelEdit">Cancelar</button>
+        </div>
+      </form>
         </div>
       </div>
       <div v-else-if="activeSection === 'users'">
@@ -136,10 +136,6 @@ const deleteProduct = async (id) => {
   fetchItems()
 }
 
-const startEdit = (item) => {
-  editProductId.value = item._id
-  editProduct.value = { ...item }
-}
 
 const updateProduct = async () => {
   await axios.put(`/api/items/${editProductId.value}`, editProduct.value)
@@ -180,6 +176,12 @@ onMounted(() => {
     sessionStorage.removeItem('justLoggedIn')
   }
 })
+
+const startEdit = (item) => {
+  editProductId.value = item._id;
+  editProduct.value = { ...item }; 
+};
+
 </script>
 
 <style scoped>

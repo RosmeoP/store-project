@@ -22,7 +22,6 @@ const router = createRouter({
   routes,
 })
 
-// Guard para proteger rutas
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore()
   if (to.meta.requiresAuth && !auth.token) {
