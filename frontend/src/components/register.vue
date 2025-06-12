@@ -68,18 +68,22 @@ const register = async () => {
       email: email.value,
       password: password.value
     })
-    // Guardar usuario y token en el store
-    auth.token = res.data.token
+    // Guardar usuario en el store y localStorage
     auth.user = res.data.user
-    localStorage.setItem('token', res.data.token)
+    localStorage.setItem('user', JSON.stringify(res.data.user))
+    const loginRes = await axios.post('http://localhost:4000/api/auth/login', {
+      email: email.value,
+      password: password.value
+    })
+    auth.token = loginRes.data.token
+    localStorage.setItem('token', loginRes.data.token)
     success.value = 'Registro exitoso'
     email.value = ''
     password.value = ''
-    router.push('/dashboard') // Redirect after successful registration
+    router.push('/dashboard') 
   } catch (err) {
     error.value = err.response?.data?.message || 'Error desconocido'
   }
 }
 </script>
 
-<!-- Enhanced register.vue with a store/product themed side panel and larger, modern form. -->

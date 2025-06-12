@@ -1,3 +1,4 @@
+<!-- components/Sidebar.vue -->
 <template>
   <aside :class="['fixed md:static z-30 inset-y-0 left-0 flex flex-col bg-gradient-to-b from-indigo-700 via-indigo-600 to-indigo-800 shadow-xl transition-transform duration-200 w-64 h-full min-h-screen', sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0']">
     <div class="flex items-center gap-3 px-6 py-6 border-b border-indigo-500">

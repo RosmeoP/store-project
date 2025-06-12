@@ -37,6 +37,7 @@ const props = defineProps({
 const emit = defineEmits(['refresh', 'edit', 'delete'])
 
 const newProduct = ref({ nombre: '', descripcion: '', precio: null })
+const BACKEND_URL = 'http://localhost:4000/api/items';
 
 const addProduct = async () => {
   try {
@@ -48,7 +49,7 @@ const addProduct = async () => {
       window.alert('El precio debe ser un número positivo.');
       return;
     }
-    await axios.post(PRODUCTS_API, {
+    await axios.post('/api/items', {
       nombre: newProduct.value.nombre,
       descripcion: newProduct.value.descripcion,
       precio: Number(newProduct.value.precio)
@@ -58,7 +59,9 @@ const addProduct = async () => {
     emit('refresh');
   } catch (err) {
     if (err.response && err.response.status === 404) {
-      window.alert('No se pudo encontrar el endpoint para agregar productos. Verifica que el backend esté corriendo y la ruta /api/items exista.');
+      window.alert('No se pudo encontrar el servicio de productos. Puede estar apagado.');
+    } else if (err.message === 'Network Error') {
+      window.alert('No se pudo conectar con el servicio de productos. Puede estar apagado.');
     } else {
       window.alert('Error al agregar producto: ' + (err.response?.data?.error || err.message));
     }

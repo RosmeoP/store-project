@@ -15,11 +15,10 @@ router.post('/register', async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
     const user = new User({ email, password: hashed });
     await user.save();
-    // Generar token y retornar usuario
-    const token = jwt.sign({ id: user._id }, 'miclaveultrasecreta', { expiresIn: '1h' });
+    // Retorna el usuario con timestamps
     res.json({
-      token,
-      user: { _id: user._id, email: user.email }
+      message: 'Usuario registrado',
+      user: { _id: user._id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt }
     });
   } catch (err) {
     res.status(500).json({ message: 'Error en el servidor' });
@@ -37,9 +36,10 @@ router.post('/login', async (req, res) => {
     if (!valid) return res.status(400).json({ message: 'Credenciales inválidas' });
 
     const token = jwt.sign({ id: user._id }, 'miclaveultrasecreta', { expiresIn: '1h' });
+    // Retorna el usuario con timestamps
     res.json({
       token,
-      user: { _id: user._id, email: user.email }
+      user: { _id: user._id, email: user.email, createdAt: user.createdAt, updatedAt: user.updatedAt }
     });
   } catch (err) {
     res.status(500).json({ message: 'Error en el servidor' });
