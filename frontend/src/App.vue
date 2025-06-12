@@ -6,47 +6,48 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-
-
 const items = ref([]);
 const loading = ref(false);
 const error = ref(null);
 const showForm = ref(false);
 const itemToEdit = ref(null);
 
-const AUTH_API_URL = import.meta.env.VITE_AUTH_API_URL;
-const PRODUCTS_API_URL = import.meta.env.VITE_PRODUCTS_API_URL;
+// URLs desde .env
+const PRODUCTS_API_URL = import.meta.env.VITE_PRODUCTS_API_URL?.replace(/\/+$/, '');
 
-// Obtener todos los items de la API
+// Obtener todos los items
 const fetchItems = async () => {
   try {
     loading.value = true;
     error.value = null;
-    const response = await axios.get(`${PRODUCTS_API_URL}/items`);
+
+    // /api/items ya es la URL completa
+    const response = await axios.get(PRODUCTS_API_URL);
     items.value = response.data;
+
   } catch (err) {
     console.error('Error al cargar items:', err);
-    error.value = 'No se pudieron cargar los items. Por favor, intenta de nuevo más tarde.';
+    error.value = 'No se pudieron cargar los items.';
   } finally {
     loading.value = false;
   }
 };
 
-// Editar un item existente
+
+// Editar item
 const editItem = (item) => {
   itemToEdit.value = item;
   showForm.value = true;
 };
 
-// Cancelar el formulario
+// Cancelar formulario
 const cancelForm = () => {
   showForm.value = false;
   itemToEdit.value = null;
 };
 
-// Cargar items al montar el componente
+// Ejecutar al montar
 onMounted(() => {
   fetchItems();
 });
 </script>
-

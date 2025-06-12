@@ -1,59 +1,70 @@
 const express = require('express');
-const Item = require('../models/item');
 const router = express.Router();
+const multer = require('multer');
+const cloudinary = require('../cloudinary');
+const streamifier = require('streamifier');
+const Item = require('../models/item');
+const upload = multer(); // Subidas en memoria
 
-// Obtener todos los items
-router.get('/', async (req, res) => {
-  try {
-    const items = await Item.find();
-    res.json(items);
-  } catch (error) {
-    console.error('Error al obtener items:', error);
-    res.status(500).json({ error: 'Error al obtener los datos' });
-  }
-});
-
-// Crear nuevo item
-router.post('/', async (req, res) => {
+router.post('/', upload.single('img'), async (req, res) => {
   try {
     const { nombre, descripcion, precio } = req.body;
-    const newItem = new Item({ nombre, descripcion, precio });
+    console.log('➡️ req.body:', req.body);
+    console.log('📁 req.file:', req.file);
+
+    if (!nombre || !descripcion || !precio) {
+      return res.status(400).json({ error: 'Faltan campos requeridos' });
+    }
+
+    let imgUrl = null;
+
+    if (req.file && req.file.buffer) {
+      // Subir imagen a Cloudinary
+      const streamUpload = (buffer) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: 'store-products' },
+            (error, result) => {
+              if (error) {
+                console.error('❌ Cloudinary error:', error);
+                reject(error);
+              } else {
+                resolve(result);
+              }
+            }
+          );
+          streamifier.createReadStream(buffer).pipe(stream);
+        });
+      };
+
+      const uploadResult = await streamUpload(req.file.buffer);
+      imgUrl = uploadResult.secure_url;
+      console.log('✅ Imagen subida a Cloudinary:', imgUrl);
+    }
+
+    const parsedPrecio = parseFloat(precio);
+    if (isNaN(parsedPrecio)) {
+      return res.status(400).json({ error: 'Precio no válido' });
+    }
+
+    const newItem = new Item({
+      nombre,
+      descripcion,
+      precio: parsedPrecio,
+      img: imgUrl
+    });
+
     await newItem.save();
+
     res.status(201).json(newItem);
   } catch (error) {
-    console.error('Error al crear item:', error);
-    res.status(500).json({ error: 'Error al crear el item' });
+    console.error('💥 Error en /api/items POST:', error);
+    res.status(500).json({
+      error: 'Error al crear el item',
+      message: error.message,
+      stack: error.stack
+    });
   }
 });
-
-// Actualizar item
-router.put('/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const updatedItem = await Item.findByIdAndUpdate(id, req.body, { new: true });
-    if (!updatedItem) {
-      return res.status(404).json({ message: 'Item no encontrado' });
-    }
-    res.json({ message: 'Item actualizado', item: updatedItem });
-  } catch (error) {
-    console.error('Error al actualizar item:', error);
-    res.status(500).json({ error: 'Error al actualizar el item' });
-  }
-});
-
-// Eliminar item
-router.delete('/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const deletedItem = await Item.findByIdAndDelete(id);
-    if (!deletedItem) {
-      return res.status(404).json({ message: 'Item no encontrado' });
-    }
-    res.json({ message: 'Item eliminado' });
-  } catch (error) {
-    console.error('Error al eliminar item:', error);
-    res.status(500).json({ error: 'Error al eliminar el item' });
-  }
-});
-
+ 
 module.exports = router;

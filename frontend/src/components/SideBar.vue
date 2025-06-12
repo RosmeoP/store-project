@@ -28,12 +28,11 @@
       </button>
       <div class="my-3 border-t border-yellow-200/30"></div>
       <div class="mb-2 text-xs text-yellow-200 font-semibold tracking-wider">GESTIÓN</div>
-      <button v-for="section in sections.slice(0, 2)" :key="section.key"
-        @click="$emit('change-section', section.key)"
+      <button v-if="sections[0]" @click="$emit('change-section', sections[0].key)"
         :class="['flex items-center gap-2 px-3 py-2 rounded transition',
-          activeSection === section.key ? 'bg-yellow-100/10 text-yellow-200 font-semibold' : 'hover:bg-yellow-100/10 text-yellow-100']">
-        <component :is="section.icon" class="w-5 h-5" />
-        <span>{{ section.label }}</span>
+          activeSection === sections[0].key ? 'bg-yellow-100/10 text-yellow-200 font-semibold' : 'hover:bg-yellow-100/10 text-yellow-100']">
+        <component :is="sections[0].icon" class="w-5 h-5" />
+        <span>{{ sections[0].label }}</span>
       </button>
       <div class="my-3 border-t border-yellow-200/30"></div>
       <div class="mb-2 text-xs text-yellow-200 font-semibold tracking-wider">CUENTA</div>
