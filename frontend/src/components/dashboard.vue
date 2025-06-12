@@ -69,6 +69,13 @@
         <EditUserForm v-if="showEditUser" :user="currentUser" @close="showEditUser = false" @refresh="fetchUsers" />
         <DeleteUserForm v-if="showDeleteUser" :user="currentUser" @close="showDeleteUser = false" @refresh="fetchUsers" />
       </div>
+      <!-- Welcome Message -->
+      <transition name="fade">
+        <div v-if="showWelcome && authStore.user" class="fixed top-6 left-1/2 z-50 -translate-x-1/2 bg-green-50 border border-green-300 text-green-800 px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-fade-in font-semibold text-lg max-w-[90vw]">
+          <svg class="w-6 h-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          ¡Bienvenido, <span class="font-bold break-all">{{ authStore.user.email.split('@')[0] }}</span>!
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -94,6 +101,7 @@ const activeSection = ref('products')
 
 const showEditUser = ref(false)
 const showDeleteUser = ref(false)
+const showWelcome = ref(false)
 
 const sections = [
   { key: 'products', label: 'Productos', icon: { render() { return h('svg', { xmlns: 'http://www.w3.org/2000/svg', class: 'w-5 h-5', fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor' }, [h('rect', { x: 3, y: 7, width: 18, height: 13, rx: 2, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }), h('path', { d: 'M16 3v4M8 3v4' })]) } } },
@@ -166,6 +174,11 @@ const changeSection = (section) => {
 onMounted(() => {
   fetchUsers()
   fetchItems()
+  if (authStore.user && sessionStorage.getItem('justLoggedIn')) {
+    showWelcome.value = true
+    setTimeout(() => showWelcome.value = false, 3500)
+    sessionStorage.removeItem('justLoggedIn')
+  }
 })
 </script>
 

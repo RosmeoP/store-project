@@ -43,6 +43,7 @@ const login = async () => {
   try {
     const success = await auth.login(email.value, password.value)
     if (success) {
+      sessionStorage.setItem('justLoggedIn', '1')
       router.push('/dashboard')
     }
   } catch (err) {
