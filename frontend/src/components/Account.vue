@@ -58,18 +58,28 @@
 
     <!-- Edit Modal -->
     <div v-if="editing" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md flex flex-col gap-4">
+      <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md flex flex-col gap-4 relative">
         <h3 class="text-xl font-bold text-gray-800 mb-2">Editar cuenta</h3>
-        <label class="text-gray-700 font-semibold">Email</label>
-        <input v-model="editEmail" type="email" class="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-indigo-300 focus:outline-none text-gray-900" />
+        <label class="text-gray-700 font-semibold">Email actual</label>
+        <div class="w-full px-4 py-2 rounded border border-gray-200 bg-gray-50 text-gray-700 mb-2 select-all">{{ user.email }}</div>
+        <label class="text-gray-700 font-semibold">Nuevo email</label>
+        <input v-model="editEmail" type="email" class="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-indigo-300 focus:outline-none text-gray-900" placeholder="Nuevo email (opcional)" />
+        <label class="text-gray-700 font-semibold">Contraseña actual <span class='text-red-500'>*</span></label>
+        <input v-model="currentPassword" type="password" class="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-indigo-300 focus:outline-none text-gray-900" placeholder="••••••••" required />
         <label class="text-gray-700 font-semibold">Nueva contraseña</label>
-        <input v-model="editPassword" type="password" class="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-indigo-300 focus:outline-none text-gray-900" placeholder="••••••••" />
+        <input v-model="editPassword" type="password" class="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-indigo-300 focus:outline-none text-gray-900" placeholder="•••••••• (opcional)" />
         <div class="flex gap-2 mt-4">
           <button @click="saveProfile" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded font-semibold transition">Guardar</button>
           <button @click="editing = false" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-5 py-2 rounded font-semibold transition">Cancelar</button>
         </div>
-        <p v-if="editError" class="text-red-500 text-sm mt-2">{{ editError }}</p>
-        <p v-if="editSuccess" class="text-green-600 text-sm mt-2">{{ editSuccess }}</p>
+        <transition name="fade">
+          <div v-if="editSuccess" class="fixed top-0 left-0 w-full flex justify-center z-50">
+            <div class="bg-green-100 border-2 border-green-400 text-green-900 px-8 py-5 mt-10 rounded-2xl shadow-2xl text-xl font-bold flex items-center gap-3 max-w-2xl animate-fade-in">
+              <svg class="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              {{ editSuccess }}
+            </div>
+          </div>
+        </transition>
       </div>
     </div>
 
@@ -98,6 +108,7 @@ const editing = ref(false)
 const showDelete = ref(false)
 const editEmail = ref('')
 const editPassword = ref('')
+const currentPassword = ref('')
 const editError = ref('')
 const editSuccess = ref('')
 const deleteError = ref('')
@@ -114,6 +125,7 @@ function formatDate(date) {
 function openEdit() {
   editEmail.value = user.value.email
   editPassword.value = ''
+  currentPassword.value = ''
   editError.value = ''
   editSuccess.value = ''
   editing.value = true
@@ -122,15 +134,24 @@ function openEdit() {
 async function saveProfile() {
   editError.value = ''
   editSuccess.value = ''
+  if (!currentPassword.value) {
+    editError.value = 'Debes ingresar tu contraseña actual.'
+    return
+  }
   try {
-    const payload = { email: editEmail.value }
+    const payload = { email: editEmail.value, currentPassword: currentPassword.value }
     if (editPassword.value) payload.password = editPassword.value
     await axios.put(`/api/auth/users/${user.value._id}`, payload)
     authStore.user = { ...user.value, email: editEmail.value }
     localStorage.setItem('user', JSON.stringify(authStore.user))
-    editSuccess.value = 'Perfil actualizado correctamente.'
+    editSuccess.value = 'Contraseña actualizada correctamente. Serás redirigido al login.'
     editPassword.value = ''
-    setTimeout(() => { editing.value = false }, 1200)
+    currentPassword.value = ''
+    setTimeout(() => {
+      editing.value = false
+      authStore.logout()
+      window.location.href = '/login'
+    }, 2000)
   } catch (err) {
     editError.value = err.response?.data?.message || 'Error al actualizar el perfil.'
   }

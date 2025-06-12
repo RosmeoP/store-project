@@ -74,10 +74,16 @@ router.post('/users', async (req, res) => {
 // editar usuario
 router.put('/users/:id', async (req, res) => {
   const { id } = req.params;
-  const { email, password } = req.body;
+  const { email, password, currentPassword } = req.body;
   try {
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+    // Si se quiere cambiar email o password, pedir currentPassword
+    if ((email && email !== user.email) || password) {
+      if (!currentPassword) return res.status(400).json({ message: 'Debes ingresar tu contraseña actual.' });
+      const valid = await bcrypt.compare(currentPassword, user.password);
+      if (!valid) return res.status(400).json({ message: 'Contraseña actual incorrecta.' });
+    }
     if (email) user.email = email;
     if (password) user.password = await bcrypt.hash(password, 10);
     await user.save();
