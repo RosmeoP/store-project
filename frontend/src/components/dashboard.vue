@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex bg-indigo-50">
+  <main class="ml-[220px] md:ml-[300px]">
     <!-- Sidebar -->
     <SideBar
       :user-email="currentUser?.email || 'Usuario'"
@@ -77,7 +77,7 @@
         </div>
       </transition>
     </div>
-  </div>
+</main>
 </template>
 
 <script setup>
