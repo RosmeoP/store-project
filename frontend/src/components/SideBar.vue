@@ -12,19 +12,23 @@
       <div class="mb-2 text-xs text-yellow-200 font-semibold tracking-wider">EXPLORA</div>
       <button class="flex items-center gap-2 px-3 py-2 rounded transition hover:bg-yellow-100/10 text-yellow-100" @click="$emit('change-section', 'popular')">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Popular Products</span>
+        <span>Productos Populares</span>
       </button>
       <button class="flex items-center gap-2 px-3 py-2 rounded transition hover:bg-yellow-100/10 text-yellow-100" @click="$emit('change-section', 'explore')">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-        <span>Explore New</span>
+        <span>Explorar Novedades</span>
       </button>
       <button class="flex items-center gap-2 px-3 py-2 rounded transition hover:bg-yellow-100/10 text-yellow-100" @click="$emit('change-section', 'gifts')">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3a4 4 0 01-8 0"/></svg>
-        <span>Gifts & Living</span>
+        <span>Regalos y Hogar</span>
       </button>
-      <button class="flex items-center gap-2 px-3 py-2 rounded transition hover:bg-yellow-100/10 text-yellow-100" @click="$emit('change-section', 'inspiration')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M13 16h-1v-4h-1m1-4h.01"/><circle cx="12" cy="12" r="10"/></svg>
-        <span>Inspiration</span>
+      <!-- Cambiado Inspiración por Carrito -->
+      <button class="flex items-center gap-2 px-3 py-2 rounded transition hover:bg-yellow-100/10 text-yellow-100" @click="$emit('change-section', 'cart')">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+        </svg>
+        <span>Carrito</span>
       </button>
       <div class="my-3 border-t border-yellow-200/30"></div>
       <div class="mb-2 text-xs text-yellow-200 font-semibold tracking-wider">GESTIÓN</div>
