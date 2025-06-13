@@ -1,17 +1,18 @@
 <template>
-  <div>
-    <!-- Botón arriba a la derecha -->
-    <div class="flex justify-end w-full max-w-5xl mx-auto mt-8 mb-6">
-      <button
-        class="bg-gradient-to-r from-indigo-500 via-indigo-400 to-indigo-600 hover:from-indigo-600 hover:to-indigo-500 text-white font-extrabold px-6 py-3 rounded-2xl shadow-2xl text-lg transition-all duration-200 border-2 border-indigo-200"
-        @click="showAddModal = true"
-      >
+    <div class="text-center mt-8 mb-2">
+      <h1 class="text-3xl font-bold text-indigo-700 mb-1">Productos</h1>
+      <p class="text-gray-500 max-w-xl mx-auto">
+        Explora nuestro catálogo de productos. Encuentra lo que necesitas, compara precios y descubre novedades. ¡Haz clic en un producto para más detalles!
+      </p>
+    </div>
+    <div class="max-w-5xl mx-auto flex justify-end mt-8 mb-6">
+      <button class="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-bold py-2 px-6 rounded-xl shadow transition" @click="showAddModal = true">
         + Agregar Producto
       </button>
     </div>
 
     <!-- Product Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl mx-auto justify-items-center">
+    <div class="max-w-5xl mr-5 mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 justify-center">
       <div
         v-for="item in items"
         :key="item._id"
@@ -50,7 +51,16 @@
           />
           <div class="text-center w-full">
             <div class="font-extrabold text-xl text-indigo-900 group-hover:text-indigo-700 transition">{{ item.nombre }}</div>
-            <div class="text-gray-500 text-sm">{{ item.descripcion }}</div>
+            <div class="text-gray-500 text-sm">
+              {{ getShortDescription(item.descripcion, item._id) }}
+              <span
+                v-if="item.descripcion && item.descripcion.length > 60"
+                class="text-indigo-500 cursor-pointer ml-1"
+                @click="toggleDescription(item._id)"
+              >
+                {{ expandedDescriptions[item._id] ? 'Leer menos' : 'Leer más' }}
+              </span>
+            </div>
           </div>
         </div>
         <div class="flex items-center justify-between mt-4">
@@ -83,7 +93,7 @@
         <h2 class="text-xl font-semibold text-indigo-700 mb-2">Editar Producto</h2>
         <input v-model="editProduct.nombre" placeholder="Nombre" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
         <input v-model="editProduct.descripcion" placeholder="Descripción" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
-        <input v-model.number="editProduct.precio" placeholder="Precio" type="number" min="0" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+        <input v-model.number="editProduct.precio" placeholder="Precio" type="number" min="0" step="0.01" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
         <div class="flex gap-2 mt-2">
           <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-medium transition">Guardar</button>
           <button type="button" class="bg-gray-400 hover:bg-gray-600 text-white px-4 py-2 rounded font-medium transition" @click="cancelEdit">Cancelar</button>
@@ -104,7 +114,7 @@
         <h2 class="text-2xl font-bold text-indigo-700 mb-2">Agregar Producto</h2>
         <input v-model="newProduct.nombre" placeholder="Nombre" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
         <input v-model="newProduct.descripcion" placeholder="Descripción" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
-        <input v-model.number="newProduct.precio" placeholder="Precio" type="number" min="0" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+        <input v-model.number="newProduct.precio" placeholder="Precio" type="number" min="0" step="0.01" class="px-3 py-2 rounded border border-indigo-200 text-base bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
 
         <!-- Drag & Drop Area -->
         <div
@@ -131,13 +141,25 @@
         <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded font-semibold transition">Agregar</button>
       </form>
     </div>
-  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import Swal from 'sweetalert2'
 import axios from 'axios';
+
+const expandedDescriptions = reactive({})
+
+function getShortDescription(desc, id) {
+  const limit = 60
+  if (!desc) return ''
+  if (desc.length <= limit || expandedDescriptions[id]) return desc
+  return desc.slice(0, limit) + '...'
+}
+
+function toggleDescription(id) {
+  expandedDescriptions[id] = !expandedDescriptions[id]
+}
 
 
 const props = defineProps({

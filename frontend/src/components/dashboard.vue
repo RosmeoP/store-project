@@ -1,5 +1,5 @@
 <template>
-  <main class="ml-[220px] md:ml-[300px]">
+  <main class="min-h-screen bg-gray-50 md:ml-64 transition-all">
     <!-- Sidebar -->
     <SideBar
       :user-email="currentUser?.email || 'Usuario'"
@@ -14,14 +14,13 @@
     <!-- Overlay for mobile -->
     <div class="fixed inset-0 bg-black bg-opacity-30 z-10 md:hidden" v-if="sidebarOpen" @click="sidebarOpen = false"></div>
     <!-- Main Content -->
-    <div class="flex-1 md:ml-64 p-4">
+    <div class="flex-1 p-4">
       <button class="md:hidden mb-4 text-indigo-700" @click="sidebarOpen = !sidebarOpen">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
       <div v-if="activeSection === 'products'">
-        <h1 class="text-3xl font-bold text-indigo-700 mb-8 text-center">Productos</h1>
         <ProductList
           :items="items"
           @refresh="fetchItems"
@@ -41,22 +40,7 @@
       </form>
         </div>
       </div>
-      <div v-else-if="activeSection === 'users'">
-        <h2 class="text-2xl font-bold text-indigo-700 mb-4 text-center">Usuarios</h2>
-        <button class="mb-4 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded transition" @click="showCreate = true">Agregar Usuario</button>
-        <ul class="space-y-3">
-          <li v-for="user in users" :key="user._id" class="flex justify-between items-center bg-indigo-50 rounded-lg px-4 py-3 shadow">
-            <span class="text-indigo-900 font-medium">{{ user.email }}</span>
-            <div class="flex gap-2">
-              <button class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded transition" @click="editUser(user)">Editar</button>
-              <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition" @click="deleteUser(user)">Eliminar</button>
-            </div>
-          </li>
-        </ul>
-        <CreateUserForm v-if="showCreate" @close="showCreate = false" @refresh="fetchUsers" />
-        <EditUserForm v-if="selectedUser" :user="selectedUser" @close="selectedUser = null" @refresh="fetchUsers" />
-        <DeleteUserForm v-if="userToDelete" :user="userToDelete" @close="userToDelete = null" @refresh="fetchUsers" />
-      </div>
+     
       <div v-else-if="activeSection === 'about'">
         <h2 class="text-2xl font-bold text-indigo-700 mb-4 text-center">Acerca de</h2>
         <div class="bg-indigo-50 rounded-lg p-6 shadow text-indigo-900">
