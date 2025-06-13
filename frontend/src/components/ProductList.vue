@@ -1,88 +1,99 @@
 <template>
     <div class="text-center mt-8 mb-2">
       <h1 class="text-3xl font-bold text-indigo-700 mb-1">Productos</h1>
-      <p class="text-gray-500 max-w-xl mx-auto">
+      <p class="text-gray-500 max-w-xl mb-5how  mx-auto">
         Explora nuestro catálogo de productos. Encuentra lo que necesitas, compara precios y descubre novedades. ¡Haz clic en un producto para más detalles!
       </p>
     </div>
-    <div class="max-w-5xl mx-auto flex justify-end mt-8 mb-6">
-      <button class="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-bold py-2 px-6 rounded-xl shadow transition" @click="showAddModal = true">
+    <div class="fixed m-5 right-0 top-0 z-10">
+      <button
+        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl shadow transition"
+        @click="showAddModal = true"
+      >
         + Agregar Producto
       </button>
     </div>
 
     <!-- Product Cards -->
-    <div class="max-w-5xl mr-5 mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 justify-center">
+    <div class="max-w-4xl mx-auto w-full">
+      <div v-if="!items || items.length === 0" class="text-center text-gray-400 py-16 text-xl">
+        No hay productos para mostrar.
+      </div>
       <div
-        v-for="item in items"
-        :key="item._id"
-        class="bg-gradient-to-br from-indigo-50 via-white to-indigo-100 rounded-2xl shadow-xl p-6 flex flex-col justify-between min-h-[380px] w-[350px] border border-indigo-200 hover:shadow-2xl transition group relative overflow-hidden"
+        v-else
+        class="grid grid-cols-1 md:grid-cols-2 gap-6"
       >
-        <button
-          class="absolute top-3 right-3 z-20 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow hover:bg-pink-100 transition"
-          @click="toggleFavorite(item)"
-          :aria-label="item.favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+        <div
+          v-for="item in items"
+          :key="item._id"
+          class="bg-gradient-to-br from-indigo-50 via-white to-indigo-100 rounded-2xl shadow-xl p-6 flex flex-col justify-between min-h-[380px] w-full border border-indigo-200 hover:shadow-2xl transition group relative overflow-hidden"
         >
-          <svg
-            :class="item.favorite ? 'text-pink-500 fill-pink-500' : 'text-gray-400'"
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-6 h-6"
-            viewBox="0 0 24 24"
-            fill="currentColor"
+          <button
+            class="absolute top-3 right-3 z-20 bg-white rounded-full w-10 h-10 flex items-center justify-center shadow hover:bg-pink-100 transition"
+            @click="toggleFavorite(item)"
+            :aria-label="item.favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'"
           >
-            <path
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            <svg
+              :class="item.favorite ? 'text-pink-500 fill-pink-500' : 'text-gray-400'"
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              />
+            </svg>
+          </button>
+          <div class="flex flex-col items-center gap-3 mb-2">
+            <img
+              v-if="item.img"
+              :src="item.img"
+              alt="Imagen del producto"
+              class="w-full h-56 object-cover rounded-xl border border-indigo-100 shadow bg-white"
+              @error="e => e.target.src = 'https://placehold.co/600x300?text=Producto'"
             />
-          </svg>
-        </button>
-        <div class="flex flex-col items-center gap-3 mb-2">
-          <img
-            v-if="item.img"
-            :src="item.img"
-            alt="Imagen del producto"
-            class="w-full h-56 object-cover rounded-xl border border-indigo-100 shadow bg-white"
-            @error="e => e.target.src = 'https://placehold.co/600x300?text=Producto'"
-          />
-          <img
-            v-else
-            src="https://placehold.co/600x300?text=Producto"
-            alt="Imagen por defecto"
-            class="w-full h-56 object-cover rounded-xl border border-indigo-100 shadow bg-white"
-          />
-          <div class="text-center w-full">
-            <div class="font-extrabold text-xl text-indigo-900 group-hover:text-indigo-700 transition">{{ item.nombre }}</div>
-            <div class="text-gray-500 text-sm">
-              {{ getShortDescription(item.descripcion, item._id) }}
-              <span
-                v-if="item.descripcion && item.descripcion.length > 60"
-                class="text-indigo-500 cursor-pointer ml-1"
-                @click="toggleDescription(item._id)"
-              >
-                {{ expandedDescriptions[item._id] ? 'Leer menos' : 'Leer más' }}
-              </span>
+            <img
+              v-else
+              src="https://placehold.co/600x300?text=Producto"
+              alt="Imagen por defecto"
+              class="w-full h-56 object-cover rounded-xl border border-indigo-100 shadow bg-white"
+            />
+            <div class="text-center w-full">
+              <div class="font-extrabold text-xl text-indigo-900 group-hover:text-indigo-700 transition">{{ item.nombre }}</div>
+              <div class="text-gray-500 text-sm">
+                {{ getShortDescription(item.descripcion, item._id) }}
+                <span
+                  v-if="item.descripcion && item.descripcion.length > 60"
+                  class="text-indigo-500 cursor-pointer ml-1"
+                  @click="toggleDescription(item._id)"
+                >
+                  {{ expandedDescriptions[item._id] ? 'Leer menos' : 'Leer más' }}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="flex items-center justify-between mt-4">
-          <div class="text-2xl font-bold text-indigo-700 group-hover:text-indigo-900 transition">${{ Number(item.precio).toFixed(2) }}</div>
-          <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition flex items-center gap-1" @click="addToCart(item)">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4"/><circle cx="7" cy="21" r="1"/><circle cx="17" cy="21" r="1"/></svg>
-            Añadir
-          </button>
-        </div>
-        <div class="flex gap-2 mt-4 justify-end">
-          <button
-            class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded-lg font-semibold shadow transition flex items-center gap-1 text-sm"
-            @click="startEdit(item)" 
-          >
-            Editar
-          </button>
-          <button
-            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg font-semibold shadow transition flex items-center gap-1 text-sm"
-            @click="confirmDelete(item._id)"
-          >
-            Eliminar
-          </button>
+          <div class="flex items-center justify-between mt-4">
+            <div class="text-2xl font-bold text-indigo-700 group-hover:text-indigo-900 transition">${{ Number(item.precio).toFixed(2) }}</div>
+            <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold shadow transition flex items-center gap-1" @click="addToCart(item)">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4"/><circle cx="7" cy="21" r="1"/><circle cx="17" cy="21" r="1"/></svg>
+              Añadir
+            </button>
+          </div>
+          <div class="flex gap-2 mt-4 justify-end">
+            <button
+              class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded-lg font-semibold shadow transition flex items-center gap-1 text-sm"
+              @click="startEdit(item)" 
+            >
+              Editar
+            </button>
+            <button
+              class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg font-semibold shadow transition flex items-center gap-1 text-sm"
+              @click="confirmDelete(item._id)"
+            >
+              Eliminar
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -151,7 +162,7 @@ import axios from 'axios';
 const expandedDescriptions = reactive({})
 
 function getShortDescription(desc, id) {
-  const limit = 60
+  const limit = 40
   if (!desc) return ''
   if (desc.length <= limit || expandedDescriptions[id]) return desc
   return desc.slice(0, limit) + '...'

@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-lg w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-8 md:p-10 flex flex-col items-center gap-6 border border-gray-200 mx-auto transition-all duration-300 mt-8 md:mt-16 mb-8 md:mb-0 md:ml-24">
+  <div class="max-w-lg w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-8 md:p-10 flex flex-col items-center gap-6 border border-gray-200 mx-auto transition-all duration-300 mt-8 md:mt-16 mb-8 md:mb-0">
     <div class="flex flex-col items-center gap-2">
       <div class="bg-gradient-to-br from-gray-400 via-gray-500 to-gray-700 rounded-full p-2 shadow-lg">
         <div class="w-16 h-16 flex items-center justify-center rounded-full bg-white text-gray-700 text-4xl font-extrabold uppercase">
